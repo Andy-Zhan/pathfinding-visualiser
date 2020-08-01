@@ -16,3 +16,7 @@
   user-select: none;
   background-color: green;
 }
+
+.node-path {
+  background-color: yellow;
+}

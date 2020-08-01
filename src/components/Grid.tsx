@@ -1,19 +1,50 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer, useCallback } from "react";
 import Node from "./Node";
 import "./styles/Grid.css";
 import { dijkstra } from "../algorithms/dijkstra";
+import { INode } from "../types/INode";
+import { Button } from "@material-ui/core";
 
 const GRID_WIDTH = 50;
 const GRID_HEIGHT = 25;
 
-interface GridProps {
-  mode: string;
-}
+// interface GridProps {
+//   mode: string;
+// }
 
-const Grid: React.FC<GridProps> = ({ mode }) => {
+const Grid: React.FC<{}> = () => {
+  const getInitialGrid = () => {
+    const grid = new Array(GRID_HEIGHT);
+    for (let row = 0; row < GRID_HEIGHT; row++) {
+      const currentRow = new Array(GRID_WIDTH);
+      for (let col = 0; col < GRID_WIDTH; col++) {
+        currentRow[col] = {
+          row,
+          col,
+          isVisited: false,
+          isPath: false,
+          isWall: false,
+          distance: Infinity,
+          weight: 1,
+          previousNode: null,
+        };
+      }
+      grid[row] = currentRow;
+    }
+    return grid;
+  };
+
+  // const gridReducer = (state, action) => {
+  //   newGrid = state.slice()
+
+  //   return state
+  // }
+
+  const [grid, setGrid] = useState(getInitialGrid());
   const [start, setStart] = useState([10, 15]);
   const [finish, setFinish] = useState([10, 35]);
   const [dragState, setDragState] = useState("");
+  const [algo, setAlgo] = useState(() => dijkstra);
 
   const handleMouseDown = (row: number, col: number) => {
     if (row === start[0] && col === start[1]) setDragState("start");
@@ -49,35 +80,87 @@ const Grid: React.FC<GridProps> = ({ mode }) => {
     }
   };
 
+  const showPath = (visitedNodes: INode[], shortestPath: INode[]) => {
+    const newGrid = grid.slice();
+    visitedNodes.forEach(
+      (n: INode) => (newGrid[n.row][n.col].isVisited = true)
+    );
+    shortestPath.forEach((n: INode) => (newGrid[n.row][n.col].isPath = true));
+    setGrid(newGrid);
+  };
+
+  const clearPath = () => {
+    grid.forEach((row) =>
+      row.forEach((node: INode) => {
+        node.isVisited = false;
+        node.isPath = false;
+        node.distance = Infinity;
+        node.previousNode = null;
+      })
+    );
+  };
+
+  const run = useCallback(() => {
+    clearPath();
+    const result = algo(
+      grid,
+      grid[start[0]][start[1]],
+      grid[finish[0]][finish[1]]
+    );
+    let visitedNodes: INode[], shortestPath: INode[];
+    if (result) {
+      [visitedNodes, shortestPath] = result;
+      showPath(visitedNodes, shortestPath);
+    }
+  }, [algo, clearPath, finish, grid, showPath, start]);
+
   useEffect(() => {
-    const visitedNodes,
-      shortestPath = dijkstra(start, finish);
-  }, [mode, start, finish]);
+    run();
+  }, [start, finish, run]);
 
   return (
-    <table className="grid">
-      <tbody>
-        {Array.from({ length: GRID_HEIGHT }, (_, row) => (
-          <tr className="row" key={row}>
-            {Array.from({ length: GRID_WIDTH }, (_, col) => (
-              <Node
-                key={`${row}-${col}`}
-                row={row}
-                col={col}
-                isStart={row === start[0] && col === start[1]}
-                isFinish={row === finish[0] && col === finish[1]}
-                onMouseDown={(row: number, col: number) =>
-                  handleMouseDown(row, col)
-                }
-                onMouseEnter={(row: number, col: number) =>
-                  handleMouseEnter(row, col)
-                }
-              />
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div>
+      <Button onClick={run}>Visualise!</Button>
+      <table className="grid">
+        <tbody>
+          {grid.map((row: INode[], rowId: number) => (
+            <tr className="row" key={rowId}>
+              {row.map((node: INode, nodeId: number) => {
+                const {
+                  row,
+                  col,
+                  isVisited,
+                  distance,
+                  isWall,
+                  isPath,
+                  previousNode,
+                } = node;
+                return (
+                  <Node
+                    key={nodeId}
+                    row={row}
+                    col={col}
+                    distance={distance}
+                    isVisited={isVisited}
+                    isWall={isWall}
+                    isPath={isPath}
+                    previousNode={previousNode}
+                    isStart={row === start[0] && col === start[1]}
+                    isFinish={row === finish[0] && col === finish[1]}
+                    onMouseDown={(row: number, col: number) =>
+                      handleMouseDown(row, col)
+                    }
+                    onMouseEnter={(row: number, col: number) =>
+                      handleMouseEnter(row, col)
+                    }
+                  />
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

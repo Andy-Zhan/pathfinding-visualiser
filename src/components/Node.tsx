@@ -1,9 +1,8 @@
 import React from "react";
 import "./styles/Node.css";
+import { INode } from "../types/INode";
 
-interface NodeProps {
-  row: number;
-  col: number;
+interface NodeProps extends INode {
   isStart: boolean;
   isFinish: boolean;
   onMouseDown: (row: number, col: number) => void;
@@ -15,10 +14,18 @@ const Node: React.FC<NodeProps> = ({
   col,
   isStart,
   isFinish,
+  isPath,
+  isVisited,
   onMouseDown,
   onMouseEnter,
 }) => {
-  const nodeType = isStart ? "node-start" : isFinish && "node-finish";
+  const nodeType = isStart
+    ? "node-start"
+    : isFinish
+    ? "node-finish"
+    : isPath
+    ? "node-path"
+    : isVisited && "node-visited";
   return (
     <td
       id={`node ${row}-${col}`}

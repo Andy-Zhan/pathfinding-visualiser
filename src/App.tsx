@@ -4,12 +4,12 @@ import Grid from "./components/Grid";
 import { Button } from "@material-ui/core";
 
 function App() {
-  const [mode, setMode] = useState("");
+  //const [mode, setMode] = useState("");
   return (
-    <div>
-      <Button onClick={() => setMode("dijkstra")}>Visualise!</Button>
-      <Grid mode={mode} />
-    </div>
+    //<div>
+    //<Button onClick={() => setMode("dijkstra")}>Visualise!</Button>
+    <Grid />
+    //</div>
   );
 }
 
