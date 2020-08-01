@@ -100,41 +100,51 @@ const Grid: React.FC<{}> = () => {
   //   );
   // };
 
-  const [b, setB] = useState(1);
+  //const [b, setB] = useState(1);
 
   const run = useCallback(() => {
-    // const newGrid = grid.slice();
-    // newGrid.forEach((row) =>
-    //   row.forEach((node: INode) => {
-    //     node.isVisited = false;
-    //     node.isPath = false;
-    //     node.distance = Infinity;
-    //     node.previousNode = null;
-    //   })
-    // );
-    //setGrid(newGrid);
-    // const result = algo(
-    //   grid,
-    //   grid[start[0]][start[1]],
-    //   grid[finish[0]][finish[1]]
-    // );
-    // let visitedNodes: INode[], shortestPath: INode[];
-    // if (result) {
-    //   [visitedNodes, shortestPath] = result;
-    //   const newGrid2 = grid.slice();
-    //   visitedNodes.forEach(
-    //     (n: INode) => (newGrid[n.row][n.col].isVisited = true)
-    //   );
-    //   shortestPath.forEach((n: INode) => (newGrid[n.row][n.col].isPath = true));
-    //   setGrid(newGrid2);
-    // }
-    setB(b + 1);
-  }, [b]);
+    setGrid((prevGrid) => {
+      const newGrid = prevGrid.slice();
+      newGrid.forEach((row) =>
+        row.forEach((node: INode) => {
+          node.isVisited = false;
+          node.isPath = false;
+          node.distance = Infinity;
+          node.previousNode = null;
+        })
+      );
+      return newGrid;
+    });
+
+    setGrid((prevGrid) => {
+      const result = algo(
+        prevGrid,
+        prevGrid[start[0]][start[1]],
+        prevGrid[finish[0]][finish[1]]
+      );
+      let visitedNodes: INode[], shortestPath: INode[];
+      if (result) {
+        [visitedNodes, shortestPath] = result;
+        const newGrid = prevGrid.slice();
+        visitedNodes.forEach(
+          (n: INode) => (newGrid[n.row][n.col].isVisited = true)
+        );
+        shortestPath.forEach(
+          (n: INode) => (newGrid[n.row][n.col].isPath = true)
+        );
+
+        return newGrid;
+      }
+      return prevGrid;
+    });
+
+    //setB(b + 1);
+  }, [algo, finish, start]);
 
   useEffect(() => {
     console.log("ffcall");
     run();
-  }, [start, finish]);
+  }, [start, finish, run]);
 
   return (
     <div>
