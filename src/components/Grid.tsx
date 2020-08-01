@@ -80,43 +80,61 @@ const Grid: React.FC<{}> = () => {
     }
   };
 
-  const showPath = (visitedNodes: INode[], shortestPath: INode[]) => {
-    const newGrid = grid.slice();
-    visitedNodes.forEach(
-      (n: INode) => (newGrid[n.row][n.col].isVisited = true)
-    );
-    shortestPath.forEach((n: INode) => (newGrid[n.row][n.col].isPath = true));
-    setGrid(newGrid);
-  };
+  // const showPath = (visitedNodes: INode[], shortestPath: INode[]) => {
+  //   const newGrid = grid.slice();
+  //   visitedNodes.forEach(
+  //     (n: INode) => (newGrid[n.row][n.col].isVisited = true)
+  //   );
+  //   shortestPath.forEach((n: INode) => (newGrid[n.row][n.col].isPath = true));
+  //   setGrid(newGrid);
+  // };
 
-  const clearPath = () => {
-    grid.forEach((row) =>
-      row.forEach((node: INode) => {
-        node.isVisited = false;
-        node.isPath = false;
-        node.distance = Infinity;
-        node.previousNode = null;
-      })
-    );
-  };
+  // const clearPath = () => {
+  //   grid.forEach((row) =>
+  //     row.forEach((node: INode) => {
+  //       node.isVisited = false;
+  //       node.isPath = false;
+  //       node.distance = Infinity;
+  //       node.previousNode = null;
+  //     })
+  //   );
+  // };
+
+  const [b, setB] = useState(1);
 
   const run = useCallback(() => {
-    clearPath();
-    const result = algo(
-      grid,
-      grid[start[0]][start[1]],
-      grid[finish[0]][finish[1]]
-    );
-    let visitedNodes: INode[], shortestPath: INode[];
-    if (result) {
-      [visitedNodes, shortestPath] = result;
-      showPath(visitedNodes, shortestPath);
-    }
-  }, [algo, clearPath, finish, grid, showPath, start]);
+    // const newGrid = grid.slice();
+    // newGrid.forEach((row) =>
+    //   row.forEach((node: INode) => {
+    //     node.isVisited = false;
+    //     node.isPath = false;
+    //     node.distance = Infinity;
+    //     node.previousNode = null;
+    //   })
+    // );
+    //setGrid(newGrid);
+    // const result = algo(
+    //   grid,
+    //   grid[start[0]][start[1]],
+    //   grid[finish[0]][finish[1]]
+    // );
+    // let visitedNodes: INode[], shortestPath: INode[];
+    // if (result) {
+    //   [visitedNodes, shortestPath] = result;
+    //   const newGrid2 = grid.slice();
+    //   visitedNodes.forEach(
+    //     (n: INode) => (newGrid[n.row][n.col].isVisited = true)
+    //   );
+    //   shortestPath.forEach((n: INode) => (newGrid[n.row][n.col].isPath = true));
+    //   setGrid(newGrid2);
+    // }
+    setB(b + 1);
+  }, [b]);
 
   useEffect(() => {
+    console.log("ffcall");
     run();
-  }, [start, finish, run]);
+  }, [start, finish]);
 
   return (
     <div>
