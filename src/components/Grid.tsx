@@ -40,15 +40,77 @@ const Grid: React.FC<{}> = () => {
   //   return state
   // }
 
-  const [grid, setGrid] = useState(getInitialGrid());
-  const [start, setStart] = useState([10, 15]);
-  const [finish, setFinish] = useState([10, 35]);
+  type nodesAction =
+    | {
+        type: "CLEAR_PATH";
+      }
+    | {
+        type: "SET_NODE";
+        property: "isVisited" | "isPath";
+        row: number;
+        col: number;
+        value: boolean;
+      }
+    | {
+        type: "SET_START";
+        row: number;
+        col: number;
+      }
+    | {
+        type: "SET_FINISH";
+        row: number;
+        col: number;
+      };
+
+  const nodesReducer = (
+    state: { grid: INode[][]; start: number[]; finish: number[] },
+    action: nodesAction
+  ) => {
+    let newGrid = state.grid.slice();
+    switch (action.type) {
+      case "CLEAR_PATH":
+        newGrid.forEach((row) =>
+          row.forEach((node: INode) => {
+            node.isVisited = false;
+            node.isPath = false;
+            node.distance = Infinity;
+            node.previousNode = null;
+          })
+        );
+        return { ...state, grid: newGrid };
+      case "SET_NODE": {
+        const { property, row, col, value } = action;
+        newGrid[row][col][property] = value;
+        return { ...state, grid: newGrid };
+      }
+      case "SET_START": {
+        const { row, col } = action;
+
+        return { ...state, start: [row, col] };
+      }
+      case "SET_FINISH": {
+        const { row, col } = action;
+        return { ...state, finish: [row, col] };
+      }
+      default:
+        throw new Error();
+    }
+  };
+
+  const [nodes, dispatchNodes] = useReducer(nodesReducer, {
+    grid: getInitialGrid(),
+    start: [10, 15],
+    finish: [10, 35],
+  });
+  // const [start, setStart] = useState([10, 15]);
+  // const [finish, setFinish] = useState([10, 35]);
   const [dragState, setDragState] = useState("");
   const [algo, setAlgo] = useState(() => dijkstra);
 
   const handleMouseDown = (row: number, col: number) => {
-    if (row === start[0] && col === start[1]) setDragState("start");
-    else if (row === finish[0] && col === finish[1]) setDragState("finish");
+    if (row === nodes.start[0] && col === nodes.start[1]) setDragState("start");
+    else if (row === nodes.finish[0] && col === nodes.finish[1])
+      setDragState("finish");
     else setDragState("wall");
   };
 
@@ -68,10 +130,10 @@ const Grid: React.FC<{}> = () => {
   const handleMouseEnter = (row: number, col: number) => {
     switch (dragState) {
       case "start":
-        setStart([row, col]);
+        dispatchNodes({ type: "SET_START", row: row, col: col });
         break;
       case "finish":
-        setFinish([row, col]);
+        dispatchNodes({ type: "SET_FINISH", row: row, col: col });
         break;
       case "wall":
         break;
@@ -80,68 +142,52 @@ const Grid: React.FC<{}> = () => {
     }
   };
 
-  // const showPath = (visitedNodes: INode[], shortestPath: INode[]) => {
-  //   const newGrid = grid.slice();
-  //   visitedNodes.forEach(
-  //     (n: INode) => (newGrid[n.row][n.col].isVisited = true)
-  //   );
-  //   shortestPath.forEach((n: INode) => (newGrid[n.row][n.col].isPath = true));
-  //   setGrid(newGrid);
-  // };
+  const run = () => {
+    const showPath = (visitedNodes: INode[], shortestPath: INode[]) => {
+      visitedNodes.forEach((n: INode) =>
+        dispatchNodes({
+          type: "SET_NODE",
+          property: "isVisited",
+          row: n.row,
+          col: n.col,
+          value: true,
+        })
+      );
+      shortestPath.forEach((n: INode) =>
+        dispatchNodes({
+          type: "SET_NODE",
+          property: "isPath",
+          row: n.row,
+          col: n.col,
+          value: true,
+        })
+      );
+    };
 
-  // const clearPath = () => {
-  //   grid.forEach((row) =>
-  //     row.forEach((node: INode) => {
-  //       node.isVisited = false;
-  //       node.isPath = false;
-  //       node.distance = Infinity;
-  //       node.previousNode = null;
-  //     })
-  //   );
-  // };
+    dispatchNodes({ type: "CLEAR_PATH" });
+    const result = algo(
+      nodes.grid,
+      nodes.grid[nodes.start[0]][nodes.start[1]],
+      nodes.grid[nodes.finish[0]][nodes.finish[1]]
+    );
+    let visitedNodes: INode[], shortestPath: INode[];
+    if (result) {
+      [visitedNodes, shortestPath] = result;
+      showPath(visitedNodes, shortestPath);
+    }
+  };
 
-  const [b, setB] = useState(1);
-
-  const run = useCallback(() => {
-    // const newGrid = grid.slice();
-    // newGrid.forEach((row) =>
-    //   row.forEach((node: INode) => {
-    //     node.isVisited = false;
-    //     node.isPath = false;
-    //     node.distance = Infinity;
-    //     node.previousNode = null;
-    //   })
-    // );
-    //setGrid(newGrid);
-    // const result = algo(
-    //   grid,
-    //   grid[start[0]][start[1]],
-    //   grid[finish[0]][finish[1]]
-    // );
-    // let visitedNodes: INode[], shortestPath: INode[];
-    // if (result) {
-    //   [visitedNodes, shortestPath] = result;
-    //   const newGrid2 = grid.slice();
-    //   visitedNodes.forEach(
-    //     (n: INode) => (newGrid[n.row][n.col].isVisited = true)
-    //   );
-    //   shortestPath.forEach((n: INode) => (newGrid[n.row][n.col].isPath = true));
-    //   setGrid(newGrid2);
-    // }
-    setB(b + 1);
-  }, [b]);
-
-  useEffect(() => {
-    console.log("ffcall");
-    run();
-  }, [start, finish]);
+  // useEffect(() => {
+  //   console.log("call");
+  //   run();
+  // }, [start, finish, run]);
 
   return (
     <div>
       <Button onClick={run}>Visualise!</Button>
       <table className="grid">
         <tbody>
-          {grid.map((row: INode[], rowId: number) => (
+          {nodes.grid.map((row: INode[], rowId: number) => (
             <tr className="row" key={rowId}>
               {row.map((node: INode, nodeId: number) => {
                 const {
@@ -163,8 +209,10 @@ const Grid: React.FC<{}> = () => {
                     isWall={isWall}
                     isPath={isPath}
                     previousNode={previousNode}
-                    isStart={row === start[0] && col === start[1]}
-                    isFinish={row === finish[0] && col === finish[1]}
+                    isStart={row === nodes.start[0] && col === nodes.start[1]}
+                    isFinish={
+                      row === nodes.finish[0] && col === nodes.finish[1]
+                    }
                     onMouseDown={(row: number, col: number) =>
                       handleMouseDown(row, col)
                     }
