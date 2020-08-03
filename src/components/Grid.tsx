@@ -1,16 +1,27 @@
-import React, { useState, useEffect, useReducer, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Node from "./Node";
 import "./styles/Grid.css";
 import { dijkstra } from "../algorithms/dijkstra";
-import { INode } from "../types/INode";
-import { Button } from "@material-ui/core";
+import { TNode } from "../types/TNode";
 
-const GRID_WIDTH = 50;
-const GRID_HEIGHT = 25;
+const GRID_WIDTH = 42;
+const GRID_HEIGHT = 22;
 
 // interface GridProps {
 //   mode: string;
 // }
+
+const cloneArray = (arr: any[][]) => {
+  return arr.map((row) => row.slice(0));
+};
+
+enum MouseMode {
+  Start,
+  Finish,
+  AddWall,
+  RemoveWall,
+  Off,
+}
 
 const Grid: React.FC<{}> = () => {
   const getInitialGrid = () => {
@@ -43,17 +54,27 @@ const Grid: React.FC<{}> = () => {
   const [grid, setGrid] = useState(getInitialGrid());
   const [start, setStart] = useState([10, 15]);
   const [finish, setFinish] = useState([10, 35]);
-  const [dragState, setDragState] = useState("");
+  const [dragState, setDragState] = useState<MouseMode>(MouseMode.Off);
   const [algo, setAlgo] = useState(() => dijkstra);
 
   const handleMouseDown = (row: number, col: number) => {
-    if (row === start[0] && col === start[1]) setDragState("start");
-    else if (row === finish[0] && col === finish[1]) setDragState("finish");
-    else setDragState("wall");
+    if (row === start[0] && col === start[1]) setDragState(MouseMode.Start);
+    else if (row === finish[0] && col === finish[1])
+      setDragState(MouseMode.Finish);
+    else if (grid[row][col].isWall) {
+      setNodeState(row, col, "isWall", false);
+      setDragState(MouseMode.RemoveWall);
+      run();
+    } else {
+      setNodeState(row, col, "isWall", true);
+      setDragState(MouseMode.AddWall);
+      if (grid[row][col].isPath) run();
+    }
   };
 
-  const handleMouseUp = () => {
-    setDragState("");
+  const handleMouseUp = (e: MouseEvent) => {
+    e.preventDefault();
+    setDragState(MouseMode.Off);
   };
 
   useEffect(() => {
@@ -61,50 +82,45 @@ const Grid: React.FC<{}> = () => {
     else document.removeEventListener("mouseup", handleMouseUp);
   }, [dragState]);
 
-  useEffect(() => {
-    console.log(dragState);
-  }, [dragState]);
-
   const handleMouseEnter = (row: number, col: number) => {
     switch (dragState) {
-      case "start":
+      case MouseMode.Start:
         setStart([row, col]);
         break;
-      case "finish":
+      case MouseMode.Finish:
         setFinish([row, col]);
         break;
-      case "wall":
+      case MouseMode.AddWall:
+        if (!grid[row][col].isWall) setNodeState(row, col, "isWall", true);
+        if (grid[row][col].isPath) run();
+        break;
+      case MouseMode.RemoveWall:
+        if (grid[row][col].isWall) {
+          setNodeState(row, col, "isWall", false);
+          run();
+        }
         break;
       default:
         return;
     }
   };
 
-  // const showPath = (visitedNodes: INode[], shortestPath: INode[]) => {
-  //   const newGrid = grid.slice();
-  //   visitedNodes.forEach(
-  //     (n: INode) => (newGrid[n.row][n.col].isVisited = true)
-  //   );
-  //   shortestPath.forEach((n: INode) => (newGrid[n.row][n.col].isPath = true));
-  //   setGrid(newGrid);
-  // };
-
-  // const clearPath = () => {
-  //   grid.forEach((row) =>
-  //     row.forEach((node: INode) => {
-  //       node.isVisited = false;
-  //       node.isPath = false;
-  //       node.distance = Infinity;
-  //       node.previousNode = null;
-  //     })
-  //   );
-  // };
-
-  //const [b, setB] = useState(1);
-
-  const run = useCallback(() => {
+  const setNodeState = (
+    row: number,
+    col: number,
+    prop: string,
+    value: boolean
+  ) => {
     setGrid((prevGrid) => {
-      const newGrid = prevGrid.slice();
+      const newGrid = cloneArray(prevGrid);
+      newGrid[row][col][prop] = value;
+      return newGrid;
+    });
+  };
+
+  const clearPath = () => {
+    setGrid((prevGrid) => {
+      const newGrid = cloneArray(prevGrid);
       newGrid.forEach((row) =>
         row.forEach((node: INode) => {
           node.isVisited = false;
@@ -115,20 +131,15 @@ const Grid: React.FC<{}> = () => {
       );
       return newGrid;
     });
+  };
+
+  const run = useCallback(() => {
+    clearPath();
 
     setGrid((prevGrid) => {
-      const result = algo(
-        prevGrid,
-        prevGrid[start[0]][start[1]],
-        prevGrid[finish[0]][finish[1]]
-      );
-      let visitedNodes: INode[], shortestPath: INode[];
-      if (result) {
-        [visitedNodes, shortestPath] = result;
-        const newGrid = prevGrid.slice();
-        visitedNodes.forEach(
-          (n: INode) => (newGrid[n.row][n.col].isVisited = true)
-        );
+      const newGrid = cloneArray(prevGrid);
+      const shortestPath = algo(newGrid, start, finish);
+      if (shortestPath) {
         shortestPath.forEach(
           (n: INode) => (newGrid[n.row][n.col].isPath = true)
         );
@@ -142,13 +153,11 @@ const Grid: React.FC<{}> = () => {
   }, [algo, finish, start]);
 
   useEffect(() => {
-    console.log("ffcall");
     run();
   }, [start, finish, run]);
 
   return (
-    <div>
-      <Button onClick={run}>Visualise!</Button>
+    <div className="gridContainer">
       <table className="grid">
         <tbody>
           {grid.map((row: INode[], rowId: number) => (

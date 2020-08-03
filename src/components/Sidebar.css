@@ -1,0 +1,25 @@
+.sidebar {
+  height: 100vh;
+  width: 280px;
+  background-color: #121212;
+  border-right: 1px solid #333333;
+  position: fixed;
+  text-align: center;
+  padding: 20px 10px;
+}
+
+.logo {
+  font-size: 36px;
+  color: rgba(255, 255, 255, 0.87);
+  user-select: none;
+}
+
+.text {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.66);
+  padding: 10px 0;
+}
+
+#algoSelect {
+  margin: 20px 10px;
+}

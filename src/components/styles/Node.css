@@ -1,22 +1,27 @@
 .node {
-  width: 25px;
-  height: 25px;
-  outline: 1px solid rgb(175, 216, 248);
+  width: 28px;
+  height: 28px;
+  outline: 3px solid var(--bg-color);
   box-sizing: border-box;
+  background-color: var(--grey);
 }
 
 .node-start {
   cursor: pointer;
   user-select: none;
-  background-color: red;
+  background-color: var(--pink);
 }
 
 .node-finish {
   cursor: pointer;
   user-select: none;
-  background-color: green;
+  background-color: var(--green);
 }
 
 .node-path {
-  background-color: yellow;
+  background-color: var(--orange);
+}
+
+.node-wall {
+  background-color: black;
 }
