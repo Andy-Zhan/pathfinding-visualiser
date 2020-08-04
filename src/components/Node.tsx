@@ -67,7 +67,7 @@ from {
           animationIterationCount: 1,
           animationName: "fade-in",
           animationTimingFunction: "ease-in",
-          animationDelay: `${visitedOrder / 50}s`,
+          animationDelay: `${visitedOrder / 100}s`,
           animationFillMode: "forwards",
           width: "100%",
           height: "100%",

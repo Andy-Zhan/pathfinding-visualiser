@@ -39,7 +39,7 @@ export default () => (
             color: "#444444",
           },
           move: {
-            speed: 1,
+            speed: 0.2,
           },
         },
         interactivity: {
@@ -47,7 +47,13 @@ export default () => (
           events: {
             onhover: {
               enable: true,
-              mode: "repulse",
+              mode: "bubble",
+            },
+          },
+          modes: {
+            bubble: {
+              distance: 300,
+              size: 6,
             },
           },
         },
