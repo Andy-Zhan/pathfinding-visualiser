@@ -1,6 +1,7 @@
 import React from "react";
-import "./styles/Node.css";
+import "../styles/Node.css";
 import { TNode } from "../types/TNode";
+import { CSSTransition } from "react-transition-group";
 
 interface Props extends TNode {
   isStart: boolean;
@@ -16,10 +17,11 @@ const Node: React.FC<Props> = ({
   isFinish,
   distance,
   isWall,
-  isPath,
-  isVisited,
+  pathOrder,
+  visitedOrder,
   onMouseDown,
   onMouseEnter,
+  isAnimate,
 }) => {
   const nodeType = isStart
     ? "node-start"
@@ -27,22 +29,23 @@ const Node: React.FC<Props> = ({
     ? "node-finish"
     : isWall
     ? "node-wall"
-    : isPath
+    : !!pathOrder
     ? "node-path"
-    : isVisited && "node-visited";
+    : !!visitedOrder && "node-visited";
+
+  const fade = ` @keyframes fade-in {
+from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+    }`;
+
   return (
     <td
       id={`node ${row}-${col}`}
       className={`node ${nodeType}`}
-      style={
-        nodeType === "node-visited"
-          ? {
-              backgroundColor: `rgb(${68 + (distance / 42) * (80 - 68)}, ${
-                80 + (distance / 42) * (197 - 80)
-              }, ${204 + (distance / 42) * (228 - 204)})`,
-            }
-          : undefined
-      }
       onMouseDown={(e: React.MouseEvent<HTMLTableDataCellElement>) => {
         e.preventDefault();
         onMouseDown(row, col);
@@ -54,7 +57,30 @@ const Node: React.FC<Props> = ({
       onDragStart={(e: React.DragEvent<HTMLTableDataCellElement>) =>
         e.preventDefault()
       }
-    ></td>
+    >
+      {/* <CSSTransition in ={isAnimate} timeout={distance*100} classNames='node-animate' ></CSSTransition> */}
+      <style children={isAnimate && fade} />
+
+      <div
+        className={isAnimate ? "node-animate" : undefined}
+        style={{
+          animationDuration: "0.2s",
+          animationIterationCount: 1,
+          animationName: "fade-in",
+          animationTimingFunction: "ease-in",
+          animationDelay: `${visitedOrder / 50}s`,
+          animationFillMode: "forwards",
+          width: "100%",
+          height: "100%",
+          backgroundColor:
+            nodeType === "node-visited"
+              ? `rgb(${68 + (distance / 42) * (80 - 68)}, ${
+                  80 + (distance / 42) * (197 - 80)
+                }, ${204 + (distance / 42) * (228 - 204)})`
+              : undefined,
+        }}
+      />
+    </td>
   );
 };
 

@@ -1,15 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
-import Node from "./Node";
-import "./styles/Grid.css";
-import { dijkstra } from "../algorithms/dijkstra";
+import React, { useEffect, useState } from "react";
+import "../styles/Grid.css";
 import { TNode } from "../types/TNode";
-
-const GRID_WIDTH = 42;
-const GRID_HEIGHT = 22;
-
-// interface GridProps {
-//   mode: string;
-// }
+import Node from "./Node";
 
 const cloneArray = (arr: any[][]) => {
   return arr.map((row) => row.slice(0));
@@ -23,39 +15,20 @@ enum MouseMode {
   Off,
 }
 
-const Grid: React.FC<{}> = () => {
-  const getInitialGrid = () => {
-    const grid = new Array(GRID_HEIGHT);
-    for (let row = 0; row < GRID_HEIGHT; row++) {
-      const currentRow = new Array(GRID_WIDTH);
-      for (let col = 0; col < GRID_WIDTH; col++) {
-        currentRow[col] = {
-          row,
-          col,
-          isVisited: false,
-          isPath: false,
-          isWall: false,
-          distance: Infinity,
-          weight: 1,
-          previousNode: null,
-        };
-      }
-      grid[row] = currentRow;
-    }
-    return grid;
-  };
+interface Props {
+  gridState: [TNode[][], React.Dispatch<React.SetStateAction<TNode[][]>>];
+  startState: [number[], React.Dispatch<React.SetStateAction<number[]>>];
+  finishState: [number[], React.Dispatch<React.SetStateAction<number[]>>];
+  run: () => void;
+}
 
-  // const gridReducer = (state, action) => {
-  //   newGrid = state.slice()
-
-  //   return state
-  // }
-
-  const [grid, setGrid] = useState(getInitialGrid());
-  const [start, setStart] = useState([10, 15]);
-  const [finish, setFinish] = useState([10, 35]);
+const Grid: React.FC<Props> = ({
+  gridState: [grid, setGrid],
+  startState: [start, setStart],
+  finishState: [finish, setFinish],
+  run,
+}) => {
   const [dragState, setDragState] = useState<MouseMode>(MouseMode.Off);
-  const [algo, setAlgo] = useState(() => dijkstra);
 
   const handleMouseDown = (row: number, col: number) => {
     if (row === start[0] && col === start[1]) setDragState(MouseMode.Start);
@@ -68,7 +41,7 @@ const Grid: React.FC<{}> = () => {
     } else {
       setNodeState(row, col, "isWall", true);
       setDragState(MouseMode.AddWall);
-      if (grid[row][col].isPath) run();
+      if (grid[row][col].pathOrder) run();
     }
   };
 
@@ -97,7 +70,7 @@ const Grid: React.FC<{}> = () => {
           !(row === finish[0] && col === finish[1])
         )
           setNodeState(row, col, "isWall", true);
-        if (grid[row][col].isVisited) run();
+        if (!!grid[row][col].visitedOrder) run();
         break;
       case MouseMode.RemoveWall:
         if (grid[row][col].isWall) {
@@ -123,44 +96,6 @@ const Grid: React.FC<{}> = () => {
     });
   };
 
-  const clearPath = () => {
-    setGrid((prevGrid) => {
-      const newGrid = cloneArray(prevGrid);
-      newGrid.forEach((row) =>
-        row.forEach((node: TNode) => {
-          node.isVisited = false;
-          node.isPath = false;
-          node.distance = Infinity;
-          node.previousNode = null;
-        })
-      );
-      return newGrid;
-    });
-  };
-
-  const run = useCallback(() => {
-    clearPath();
-
-    setGrid((prevGrid) => {
-      const newGrid = cloneArray(prevGrid);
-      const shortestPath = algo(newGrid, start, finish);
-      if (shortestPath) {
-        shortestPath.forEach(
-          (n: TNode) => (newGrid[n.row][n.col].isPath = true)
-        );
-
-        return newGrid;
-      }
-      return prevGrid;
-    });
-
-    //setB(b + 1);
-  }, [algo, finish, start]);
-
-  useEffect(() => {
-    run();
-  }, [start, finish, run]);
-
   return (
     <div
       onContextMenu={(e) => {
@@ -177,11 +112,12 @@ const Grid: React.FC<{}> = () => {
                 const {
                   row,
                   col,
-                  isVisited,
+                  visitedOrder,
                   distance,
                   isWall,
-                  isPath,
+                  pathOrder,
                   previousNode,
+                  isAnimate,
                 } = node;
                 return (
                   <Node
@@ -189,12 +125,13 @@ const Grid: React.FC<{}> = () => {
                     row={row}
                     col={col}
                     distance={distance}
-                    isVisited={isVisited}
+                    visitedOrder={visitedOrder}
                     isWall={isWall}
-                    isPath={isPath}
+                    pathOrder={pathOrder}
                     previousNode={previousNode}
                     isStart={row === start[0] && col === start[1]}
                     isFinish={row === finish[0] && col === finish[1]}
+                    isAnimate={isAnimate}
                     onMouseDown={(row: number, col: number) =>
                       handleMouseDown(row, col)
                     }

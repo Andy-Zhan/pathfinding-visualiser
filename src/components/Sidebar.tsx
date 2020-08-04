@@ -1,5 +1,5 @@
 import React from "react";
-import "./Sidebar.css";
+import "../styles/Sidebar.css";
 const Sidebar: React.FC<{}> = ({ children }) => (
   <div className="sidebar">
     <h1 className="logo">Pathfinding Visualiser</h1>
