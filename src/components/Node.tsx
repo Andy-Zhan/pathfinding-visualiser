@@ -2,7 +2,7 @@ import React from "react";
 import "./styles/Node.css";
 import { TNode } from "../types/TNode";
 
-interface Props extends INode {
+interface Props extends TNode {
   isStart: boolean;
   isFinish: boolean;
   onMouseDown: (row: number, col: number) => void;

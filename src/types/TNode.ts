@@ -1,9 +1,9 @@
-export interface INode {
+export interface TNode {
   row: number;
   col: number;
   distance: number;
   isVisited: boolean;
   isWall: boolean;
   isPath: boolean;
-  previousNode: INode | null;
+  previousNode: TNode | null;
 }

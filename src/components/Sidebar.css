@@ -6,12 +6,14 @@
   position: fixed;
   text-align: center;
   padding: 20px 10px;
+  z-index: 1;
 }
 
 .logo {
   font-size: 36px;
   color: rgba(255, 255, 255, 0.87);
   user-select: none;
+  padding: 20px 0;
 }
 
 .text {

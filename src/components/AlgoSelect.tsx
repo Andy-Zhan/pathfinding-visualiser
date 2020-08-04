@@ -1,13 +1,13 @@
 import React from "react";
 import Select from "react-select";
+import { TAlgo } from "../types/TAlgo";
 
 interface Props {
-  algos: 
-  setAlgo: React.Dispatch<React.SetStateAction<undefined>>
+  algos: TAlgo[];
+  setAlgo: React.Dispatch<React.SetStateAction<TAlgo>>;
 }
 
-const AlgoSelect: React.FC<Props> = () => {
-
+const AlgoSelect: React.FC<Props> = ({ algos, setAlgo }) => {
   const selectStyles = {
     option: (provided: Object, state: any) => ({
       ...provided,
@@ -32,6 +32,9 @@ const AlgoSelect: React.FC<Props> = () => {
         getOptionLabel={(o) => o.name}
         defaultValue={algos[0]}
         styles={selectStyles}
+        onChange={(o) => {
+          if (o) setAlgo(o as TAlgo);
+        }}
       />
     </>
   );

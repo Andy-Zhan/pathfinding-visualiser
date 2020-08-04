@@ -91,8 +91,13 @@ const Grid: React.FC<{}> = () => {
         setFinish([row, col]);
         break;
       case MouseMode.AddWall:
-        if (!grid[row][col].isWall) setNodeState(row, col, "isWall", true);
-        if (grid[row][col].isPath) run();
+        if (
+          !grid[row][col].isWall &&
+          !(row === start[0] && col === start[1]) &&
+          !(row === finish[0] && col === finish[1])
+        )
+          setNodeState(row, col, "isWall", true);
+        if (grid[row][col].isVisited) run();
         break;
       case MouseMode.RemoveWall:
         if (grid[row][col].isWall) {
@@ -122,7 +127,7 @@ const Grid: React.FC<{}> = () => {
     setGrid((prevGrid) => {
       const newGrid = cloneArray(prevGrid);
       newGrid.forEach((row) =>
-        row.forEach((node: INode) => {
+        row.forEach((node: TNode) => {
           node.isVisited = false;
           node.isPath = false;
           node.distance = Infinity;
@@ -141,7 +146,7 @@ const Grid: React.FC<{}> = () => {
       const shortestPath = algo(newGrid, start, finish);
       if (shortestPath) {
         shortestPath.forEach(
-          (n: INode) => (newGrid[n.row][n.col].isPath = true)
+          (n: TNode) => (newGrid[n.row][n.col].isPath = true)
         );
 
         return newGrid;
@@ -157,12 +162,18 @@ const Grid: React.FC<{}> = () => {
   }, [start, finish, run]);
 
   return (
-    <div className="gridContainer">
+    <div
+      onContextMenu={(e) => {
+        e.preventDefault();
+        return false;
+      }}
+      className="gridContainer"
+    >
       <table className="grid">
         <tbody>
-          {grid.map((row: INode[], rowId: number) => (
+          {grid.map((row: TNode[], rowId: number) => (
             <tr className="row" key={rowId}>
-              {row.map((node: INode, nodeId: number) => {
+              {row.map((node: TNode, nodeId: number) => {
                 const {
                   row,
                   col,
