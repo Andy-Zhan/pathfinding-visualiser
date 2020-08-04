@@ -27,7 +27,8 @@ const Visualiser: React.FC<{}> = () => {
   ];
 
   const [algo, setAlgo] = useState(algos[0]);
-  const [anim, setAnim] = useState(true);
+  const [animToggle, setAnimToggle] = useState(true);
+  const [isAnim, setAnim] = useState(false);
 
   const GRID_WIDTH = 42;
   const GRID_HEIGHT = 22;
@@ -50,7 +51,6 @@ const Visualiser: React.FC<{}> = () => {
           distance: Infinity,
           weight: 1,
           previousNode: null,
-          isAnimate: false,
         };
       }
       grid[row] = currentRow;
@@ -64,6 +64,7 @@ const Visualiser: React.FC<{}> = () => {
 
   const run = useCallback(() => {
     const clearPath = () => {
+      setAnim(false);
       setGrid((prevGrid) => {
         const newGrid = cloneArray(prevGrid);
         newGrid.forEach((row) =>
@@ -108,32 +109,16 @@ const Visualiser: React.FC<{}> = () => {
   };
 
   const animate = () => {
-    setGrid((prevGrid) => {
-      const newGrid = cloneArray(prevGrid);
-      newGrid.forEach((row) =>
-        row.forEach((node: TNode) => {
-          node.isAnimate = false;
-        })
-      );
-      return newGrid;
-    });
     setAnim(false);
+    setAnimToggle(false);
   };
 
   useEffect(() => {
-    if (!anim) {
-      setGrid((prevGrid) => {
-        const newGrid = cloneArray(prevGrid);
-        newGrid.forEach((row) =>
-          row.forEach((node: TNode) => {
-            if (!!node.visitedOrder) node.isAnimate = true;
-          })
-        );
-        return newGrid;
-      });
+    if (!animToggle) {
+      setAnimToggle(true);
       setAnim(true);
     }
-  }, [anim]);
+  }, [animToggle]);
 
   useEffect(() => {
     console.log(algo);
@@ -167,6 +152,7 @@ const Visualiser: React.FC<{}> = () => {
         startState={[start, setStart]}
         finishState={[finish, setFinish]}
         run={run}
+        isAnim={isAnim}
       />
     </div>
   );

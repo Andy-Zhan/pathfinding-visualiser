@@ -6,5 +6,4 @@ export interface TNode {
   isWall: boolean;
   pathOrder: number;
   previousNode: TNode | null;
-  isAnimate: boolean;
 }

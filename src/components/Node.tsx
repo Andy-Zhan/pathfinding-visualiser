@@ -1,13 +1,13 @@
 import React from "react";
 import "../styles/Node.css";
 import { TNode } from "../types/TNode";
-import { CSSTransition } from "react-transition-group";
 
 interface Props extends TNode {
   isStart: boolean;
   isFinish: boolean;
   onMouseDown: (row: number, col: number) => void;
   onMouseEnter: (row: number, col: number) => void;
+  isAnim: boolean;
 }
 
 const Node: React.FC<Props> = ({
@@ -21,7 +21,7 @@ const Node: React.FC<Props> = ({
   visitedOrder,
   onMouseDown,
   onMouseEnter,
-  isAnimate,
+  isAnim,
 }) => {
   const nodeType = isStart
     ? "node-start"
@@ -58,11 +58,10 @@ from {
         e.preventDefault()
       }
     >
-      {/* <CSSTransition in ={isAnimate} timeout={distance*100} classNames='node-animate' ></CSSTransition> */}
-      <style children={isAnimate && fade} />
+      <style children={isAnim && fade} />
 
       <div
-        className={isAnimate ? "node-animate" : undefined}
+        className={isAnim ? "node-animate" : undefined}
         style={{
           animationDuration: "0.2s",
           animationIterationCount: 1,

@@ -20,6 +20,7 @@ interface Props {
   startState: [number[], React.Dispatch<React.SetStateAction<number[]>>];
   finishState: [number[], React.Dispatch<React.SetStateAction<number[]>>];
   run: () => void;
+  isAnim: boolean;
 }
 
 const Grid: React.FC<Props> = ({
@@ -27,6 +28,7 @@ const Grid: React.FC<Props> = ({
   startState: [start, setStart],
   finishState: [finish, setFinish],
   run,
+  isAnim,
 }) => {
   const [dragState, setDragState] = useState<MouseMode>(MouseMode.Off);
 
@@ -117,7 +119,6 @@ const Grid: React.FC<Props> = ({
                   isWall,
                   pathOrder,
                   previousNode,
-                  isAnimate,
                 } = node;
                 return (
                   <Node
@@ -131,7 +132,7 @@ const Grid: React.FC<Props> = ({
                     previousNode={previousNode}
                     isStart={row === start[0] && col === start[1]}
                     isFinish={row === finish[0] && col === finish[1]}
-                    isAnimate={isAnimate}
+                    isAnim={isAnim}
                     onMouseDown={(row: number, col: number) =>
                       handleMouseDown(row, col)
                     }
