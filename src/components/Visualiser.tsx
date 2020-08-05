@@ -67,7 +67,7 @@ const Visualiser: React.FC<{}> = () => {
 
   const run = useCallback(() => {
     const clearPath = () => {
-      //setAnim(false);
+      setAnim(false);
       setGrid((prevGrid) => {
         const newGrid = cloneArray(prevGrid);
         newGrid.forEach((row) =>
@@ -88,24 +88,10 @@ const Visualiser: React.FC<{}> = () => {
       const newGrid = cloneArray(prevGrid);
       const result = algo.algorithm(newGrid, start, finish);
       if (!result) return prevGrid;
-      const [visitedNodes, shortestPath] = result
-      if (isAnimate)
-        for (let i = 0; i<=visitedNodes.length; i++ ){
-          if (i === visitedNodes.length) {
-            setTimeout(() => {
-              animateShortestPath(nodesInShortestPathOrder);
-            }, 10 * i);
-          }
-          else {
-          setTimeout(() => {
-            const node = visitedNodes[i];
-            node.isAnimVisited = true
-          }, 10 * i);
-        }
+      const [visitedNodes, shortestPath] = result;
       shortestPath.forEach(
         (n: TNode, i) => (newGrid[n.row][n.col].isPath = i + 1)
       );
-
       return newGrid;
     });
 
@@ -126,16 +112,16 @@ const Visualiser: React.FC<{}> = () => {
   };
 
   const animate = () => {
-    setAnimate(true);
-    run();
+    setAnim(false);
+    setAnimToggle(false);
   };
 
-  // useEffect(() => {
-  //   if (!animToggle) {
-  //     setAnimToggle(true);
-  //     setAnim(true);
-  //   }
-  // }, [animToggle]);
+  useEffect(() => {
+    if (!animToggle) {
+      setAnimToggle(true);
+      setAnim(true);
+    }
+  }, [animToggle]);
 
   useEffect(() => {
     run();
@@ -173,11 +159,7 @@ const Visualiser: React.FC<{}> = () => {
         startState={[start, setStart]}
         finishState={[finish, setFinish]}
         run={run}
-<<<<<<< Updated upstream
-        //isAnim={isAnim}
-=======
         isAnim={isAnim}
->>>>>>> Stashed changes
         animSpeed={animSpeed}
       />
     </div>
