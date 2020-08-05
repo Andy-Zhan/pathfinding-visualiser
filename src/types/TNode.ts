@@ -2,8 +2,8 @@ export interface TNode {
   row: number;
   col: number;
   distance: number;
-  isVisited: number;
+  visitedOrder: number;
   isWall: boolean;
-  isPath: number;
+  pathOrder: number;
   previousNode: TNode | null;
 }

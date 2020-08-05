@@ -31,7 +31,6 @@ const Visualiser: React.FC<{}> = () => {
   const [animToggle, setAnimToggle] = useState(true);
   const [isAnim, setAnim] = useState(false);
   const [animSpeed, setAnimSpeed] = useState<number>(100);
-  const [isAnimate, setAnimate] = useState(false);
 
   const GRID_WIDTH = 42;
   const GRID_HEIGHT = 22;
@@ -48,8 +47,8 @@ const Visualiser: React.FC<{}> = () => {
         currentRow[col] = {
           row,
           col,
-          isVisited: 0,
-          isPath: 0,
+          visitedOrder: 0,
+          pathOrder: 0,
           isWall: false,
           distance: Infinity,
           weight: 1,
@@ -72,8 +71,8 @@ const Visualiser: React.FC<{}> = () => {
         const newGrid = cloneArray(prevGrid);
         newGrid.forEach((row) =>
           row.forEach((node: TNode) => {
-            node.isVisited = 0;
-            node.isPath = 0;
+            node.visitedOrder = 0;
+            node.pathOrder = 0;
             node.distance = Infinity;
             node.previousNode = null;
           })
@@ -90,7 +89,7 @@ const Visualiser: React.FC<{}> = () => {
       if (!result) return prevGrid;
       const [visitedNodes, shortestPath] = result;
       shortestPath.forEach(
-        (n: TNode, i) => (newGrid[n.row][n.col].isPath = i + 1)
+        (n: TNode, i) => (newGrid[n.row][n.col].pathOrder = i + 1)
       );
       return newGrid;
     });

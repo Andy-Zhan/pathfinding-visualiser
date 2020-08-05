@@ -45,7 +45,7 @@ const Grid: React.FC<Props> = ({
     } else {
       setNodeState(row, col, "isWall", true);
       setDragState(MouseMode.AddWall);
-      if (grid[row][col].isPath) run();
+      if (grid[row][col].pathOrder) run();
     }
   };
 
@@ -74,7 +74,7 @@ const Grid: React.FC<Props> = ({
           !(row === finish[0] && col === finish[1])
         )
           setNodeState(row, col, "isWall", true);
-        if (grid[row][col].isVisited) run();
+        if (!!grid[row][col].visitedOrder) run();
         break;
       case MouseMode.RemoveWall:
         if (grid[row][col].isWall) {
@@ -116,10 +116,10 @@ const Grid: React.FC<Props> = ({
                 const {
                   row,
                   col,
-                  isVisited,
+                  visitedOrder,
                   distance,
                   isWall,
-                  isPath,
+                  pathOrder,
                   previousNode,
                 } = node;
                 return (
@@ -128,9 +128,9 @@ const Grid: React.FC<Props> = ({
                     row={row}
                     col={col}
                     distance={distance}
-                    isVisited={isVisited}
+                    visitedOrder={visitedOrder}
                     isWall={isWall}
-                    isPath={isPath}
+                    pathOrder={pathOrder}
                     previousNode={previousNode}
                     isStart={row === start[0] && col === start[1]}
                     isFinish={row === finish[0] && col === finish[1]}

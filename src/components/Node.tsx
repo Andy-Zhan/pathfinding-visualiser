@@ -18,8 +18,8 @@ const Node: React.FC<Props> = ({
   isFinish,
   distance,
   isWall,
-  isPath,
-  isVisited,
+  pathOrder,
+  visitedOrder,
   onMouseDown,
   onMouseEnter,
   isAnim,
@@ -31,9 +31,9 @@ const Node: React.FC<Props> = ({
     ? "node-finish"
     : isWall
     ? "node-wall"
-    : isPath
+    : !!pathOrder
     ? "node-path"
-    : isVisited && "node-visited";
+    : !!visitedOrder && "node-visited";
 
   const fade = ` @keyframes fade-in {
 from {
@@ -43,7 +43,7 @@ from {
     opacity: 1;
   }
     }`;
-
+  console.log(visitedOrder);
   return (
     <td
       id={`node ${row}-${col}`}
@@ -69,7 +69,7 @@ from {
           animationIterationCount: 1,
           animationName: "fade-in",
           animationTimingFunction: "ease-in",
-          animationDelay: `${isVisited / 100}s`,
+          animationDelay: `${visitedOrder / 100}s`,
           animationFillMode: "forwards",
           width: "100%",
           height: "100%",
