@@ -41,10 +41,6 @@
   transition: all 0.5s;
 }
 
-.heart-icon:hover {
-  transform: scale(1.5);
-  filter: brightness(2) hue-rotate(360deg);
-}
 .footer-link {
   color: rgba(255, 255, 255, 0.3);
   font-size: 14;
@@ -55,4 +51,9 @@
 
 .footer-link:hover {
   color: rgb(255, 255, 255, 0.5);
+}
+
+.footer-link:hover .heart-icon {
+  transform: scale(1.5);
+  filter: brightness(2) hue-rotate(360deg);
 }

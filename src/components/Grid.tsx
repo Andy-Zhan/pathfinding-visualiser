@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "../styles/Grid.css";
 import { TNode } from "../types/TNode";
 import Node from "./Node";
@@ -57,7 +57,8 @@ const Grid: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    document.addEventListener("mouseup", handleMouseUp);
+    if (dragState !== MouseMode.Off)
+      document.addEventListener("mouseup", handleMouseUp);
     return () => document.removeEventListener("mouseup", handleMouseUp);
   }, [dragState]);
 

@@ -7,7 +7,7 @@ interface Props {
   setAlgo: React.Dispatch<React.SetStateAction<TAlgo>>;
 }
 
-const AlgoSelect: React.FC<Props> = ({ algos, setAlgo }) => {
+const AlgoSelect = React.memo<Props>(({ algos, setAlgo }) => {
   const selectStyles = {
     option: (provided: Object, state: any) => ({
       ...provided,
@@ -38,6 +38,6 @@ const AlgoSelect: React.FC<Props> = ({ algos, setAlgo }) => {
       />
     </>
   );
-};
+});
 
 export default AlgoSelect;

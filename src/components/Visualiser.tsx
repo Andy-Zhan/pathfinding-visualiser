@@ -66,26 +66,35 @@ const Visualiser: React.FC<{}> = () => {
   const [finish, setFinish] = useState([10, 35]);
 
   const run = useCallback(() => {
-    const clearPath = () => {
-      setAnim(false);
-      setGrid((prevGrid) => {
-        const newGrid = cloneArray(prevGrid);
-        newGrid.forEach((row) =>
-          row.forEach((node: TNode) => {
-            node.visitedOrder = 0;
-            node.pathOrder = 0;
-            node.distance = Infinity;
-            node.previousNode = null;
-          })
-        );
-        return newGrid;
-      });
-    };
+    // const clearPath = () => {
+    //   setAnim(false);
+    //   setGrid((prevGrid) => {
+    //     const newGrid = cloneArray(prevGrid);
+    //     newGrid.forEach((row) =>
+    //       row.forEach((node: TNode) => {
+    //         node.visitedOrder = 0;
+    //         node.pathOrder = 0;
+    //         node.distance = Infinity;
+    //         node.previousNode = null;
+    //       })
+    //     );
+    //     return newGrid;
+    //   });
+    // };
 
-    clearPath();
+    // clearPath();
+    setAnim(false);
 
     setGrid((prevGrid) => {
       const newGrid = cloneArray(prevGrid);
+      newGrid.forEach((row) =>
+        row.forEach((node: TNode) => {
+          node.visitedOrder = 0;
+          node.pathOrder = 0;
+          node.distance = Infinity;
+          node.previousNode = null;
+        })
+      );
       const result = algo.algorithm(newGrid, start, finish);
       if (!result) return prevGrid;
       // const [visitedNodes, shortestPath] = result;
@@ -120,7 +129,7 @@ const Visualiser: React.FC<{}> = () => {
 
   useEffect(() => {
     run();
-  }, [run]);
+  }, [run, start, finish]);
 
   return (
     <div>
