@@ -21,6 +21,7 @@ interface Props {
   finishState: [number[], React.Dispatch<React.SetStateAction<number[]>>];
   run: () => void;
   isAnim: boolean;
+  animSpeed: number;
 }
 
 const Grid: React.FC<Props> = ({
@@ -29,6 +30,7 @@ const Grid: React.FC<Props> = ({
   finishState: [finish, setFinish],
   run,
   isAnim,
+  animSpeed,
 }) => {
   const [dragState, setDragState] = useState<MouseMode>(MouseMode.Off);
 
@@ -43,7 +45,7 @@ const Grid: React.FC<Props> = ({
     } else {
       setNodeState(row, col, "isWall", true);
       setDragState(MouseMode.AddWall);
-      if (grid[row][col].pathOrder) run();
+      if (grid[row][col].isPath) run();
     }
   };
 
@@ -72,7 +74,7 @@ const Grid: React.FC<Props> = ({
           !(row === finish[0] && col === finish[1])
         )
           setNodeState(row, col, "isWall", true);
-        if (!!grid[row][col].visitedOrder) run();
+        if (grid[row][col].isVisited) run();
         break;
       case MouseMode.RemoveWall:
         if (grid[row][col].isWall) {
@@ -114,10 +116,10 @@ const Grid: React.FC<Props> = ({
                 const {
                   row,
                   col,
-                  visitedOrder,
+                  isVisited,
                   distance,
                   isWall,
-                  pathOrder,
+                  isPath,
                   previousNode,
                 } = node;
                 return (
@@ -126,13 +128,14 @@ const Grid: React.FC<Props> = ({
                     row={row}
                     col={col}
                     distance={distance}
-                    visitedOrder={visitedOrder}
+                    isVisited={isVisited}
                     isWall={isWall}
-                    pathOrder={pathOrder}
+                    isPath={isPath}
                     previousNode={previousNode}
                     isStart={row === start[0] && col === start[1]}
                     isFinish={row === finish[0] && col === finish[1]}
                     isAnim={isAnim}
+                    animSpeed={animSpeed}
                     onMouseDown={(row: number, col: number) =>
                       handleMouseDown(row, col)
                     }

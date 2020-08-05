@@ -8,6 +8,7 @@ interface Props extends TNode {
   onMouseDown: (row: number, col: number) => void;
   onMouseEnter: (row: number, col: number) => void;
   isAnim: boolean;
+  animSpeed: number;
 }
 
 const Node: React.FC<Props> = ({
@@ -17,11 +18,12 @@ const Node: React.FC<Props> = ({
   isFinish,
   distance,
   isWall,
-  pathOrder,
-  visitedOrder,
+  isPath,
+  isVisited,
   onMouseDown,
   onMouseEnter,
   isAnim,
+  animSpeed,
 }) => {
   const nodeType = isStart
     ? "node-start"
@@ -29,9 +31,9 @@ const Node: React.FC<Props> = ({
     ? "node-finish"
     : isWall
     ? "node-wall"
-    : !!pathOrder
+    : isPath
     ? "node-path"
-    : !!visitedOrder && "node-visited";
+    : isVisited && "node-visited";
 
   const fade = ` @keyframes fade-in {
 from {
@@ -67,7 +69,7 @@ from {
           animationIterationCount: 1,
           animationName: "fade-in",
           animationTimingFunction: "ease-in",
-          animationDelay: `${visitedOrder / 100}s`,
+          // animationDelay: `${isVisited / 100}s`,
           animationFillMode: "forwards",
           width: "100%",
           height: "100%",

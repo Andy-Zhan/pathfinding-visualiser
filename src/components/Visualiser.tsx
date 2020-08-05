@@ -173,7 +173,11 @@ const Visualiser: React.FC<{}> = () => {
         startState={[start, setStart]}
         finishState={[finish, setFinish]}
         run={run}
+<<<<<<< Updated upstream
         //isAnim={isAnim}
+=======
+        isAnim={isAnim}
+>>>>>>> Stashed changes
         animSpeed={animSpeed}
       />
     </div>

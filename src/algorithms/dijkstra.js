@@ -7,7 +7,6 @@ export function dijkstra(grid, start, finish) {
   const startNode = grid[start[0]][start[1]];
   const finishNode = grid[finish[0]][finish[1]];
   const visitedNodesInOrder = [];
-  let count = 1;
   startNode.distance = 0;
   const unvisitedNodes = grid.flat();
   while (unvisitedNodes.length) {
@@ -18,11 +17,10 @@ export function dijkstra(grid, start, finish) {
     // If the closest node is at a distance of infinity,
     // we must be trapped and should therefore stop.
     if (closestNode.distance === Infinity) return;
-    closestNode.visitedOrder = count;
-    count++;
+    closestNode.isVisited = true;
     visitedNodesInOrder.push(closestNode);
     if (closestNode === finishNode)
-      return getNodesInShortestPathOrder(finishNode);
+      return [visitedNodesInOrder, getNodesInShortestPathOrder(finishNode)];
     updateUnvisitedNeighbors(closestNode, grid);
   }
   return;
@@ -47,7 +45,7 @@ function getUnvisitedNeighbors(node, grid) {
   if (row < grid.length - 1) neighbors.push(grid[row + 1][col]);
   if (col > 0) neighbors.push(grid[row][col - 1]);
   if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]);
-  return neighbors.filter((neighbor) => !neighbor.visitedOrder);
+  return neighbors.filter((neighbor) => !neighbor.isVisited);
 }
 
 // Backtracks from the finishNode to find the shortest path.

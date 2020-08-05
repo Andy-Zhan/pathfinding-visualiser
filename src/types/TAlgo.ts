@@ -9,5 +9,5 @@ export interface TAlgo {
     grid: TNode[][],
     start: number[],
     finish: number[]
-  ) => TNode[] | undefined;
+  ) => TNode[][] | undefined;
 }
