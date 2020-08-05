@@ -47,7 +47,7 @@ const Grid: React.FC<Props> = ({
     } else {
       setNodeState(row, col, "isWall", true);
       setDragState(MouseMode.AddWall);
-      if (grid[row][col].pathOrder) run();
+      if (!!grid[row][col].pathOrder) run();
     }
   };
 
@@ -57,8 +57,8 @@ const Grid: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    if (dragState) document.addEventListener("mouseup", handleMouseUp);
-    else document.removeEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mouseup", handleMouseUp);
+    return () => document.removeEventListener("mouseup", handleMouseUp);
   }, [dragState]);
 
   const handleMouseEnter = (row: number, col: number) => {
@@ -76,7 +76,7 @@ const Grid: React.FC<Props> = ({
           !(row === finish[0] && col === finish[1])
         )
           setNodeState(row, col, "isWall", true);
-        if (!!grid[row][col].visitedOrder) run();
+        if (!!grid[row][col].pathOrder) run();
         break;
       case MouseMode.RemoveWall:
         if (grid[row][col].isWall) {

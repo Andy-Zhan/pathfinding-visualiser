@@ -155,8 +155,8 @@ const Visualiser: React.FC<{}> = () => {
         finishState={[finish, setFinish]}
         run={run}
         isAnim={isAnim}
-        animSpeed={animSpeed}
-        visitedNodeLength={grid[finish[0]][finish[1]].visitedOrder}
+        animSpeed={100}
+        visitedNodeLength={isAnim ? grid[finish[0]][finish[1]].visitedOrder : 0}
       />
     </div>
   );
