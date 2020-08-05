@@ -5,6 +5,7 @@ import Grid from "./Grid";
 import Sidebar from "./Sidebar";
 import { TNode } from "../types/TNode";
 import Button from "./Button";
+import Slider from "@bit/mui-org.material-ui.slider";
 
 import { dijkstra } from "../algorithms/dijkstra";
 
@@ -29,6 +30,8 @@ const Visualiser: React.FC<{}> = () => {
   const [algo, setAlgo] = useState(algos[0]);
   const [animToggle, setAnimToggle] = useState(true);
   const [isAnim, setAnim] = useState(false);
+  const [animSpeed, setAnimSpeed] = useState<number>(100);
+  const [isAnimate, setAnimate] = useState(false);
 
   const GRID_WIDTH = 42;
   const GRID_HEIGHT = 22;
@@ -45,8 +48,8 @@ const Visualiser: React.FC<{}> = () => {
         currentRow[col] = {
           row,
           col,
-          visitedOrder: 0,
-          pathOrder: 0,
+          isVisited: 0,
+          isPath: 0,
           isWall: false,
           distance: Infinity,
           weight: 1,
@@ -64,13 +67,13 @@ const Visualiser: React.FC<{}> = () => {
 
   const run = useCallback(() => {
     const clearPath = () => {
-      setAnim(false);
+      //setAnim(false);
       setGrid((prevGrid) => {
         const newGrid = cloneArray(prevGrid);
         newGrid.forEach((row) =>
           row.forEach((node: TNode) => {
-            node.visitedOrder = 0;
-            node.pathOrder = 0;
+            node.isVisited = 0;
+            node.isPath = 0;
             node.distance = Infinity;
             node.previousNode = null;
           })
@@ -83,10 +86,24 @@ const Visualiser: React.FC<{}> = () => {
 
     setGrid((prevGrid) => {
       const newGrid = cloneArray(prevGrid);
-      const shortestPath = algo.algorithm(newGrid, start, finish);
-      if (!shortestPath) return prevGrid;
+      const result = algo.algorithm(newGrid, start, finish);
+      if (!result) return prevGrid;
+      const [visitedNodes, shortestPath] = result
+      if (isAnimate)
+        for (let i = 0; i<=visitedNodes.length; i++ ){
+          if (i === visitedNodes.length) {
+            setTimeout(() => {
+              animateShortestPath(nodesInShortestPathOrder);
+            }, 10 * i);
+          }
+          else {
+          setTimeout(() => {
+            const node = visitedNodes[i];
+            node.isAnimVisited = true
+          }, 10 * i);
+        }
       shortestPath.forEach(
-        (n: TNode, i) => (newGrid[n.row][n.col].pathOrder = i + 1)
+        (n: TNode, i) => (newGrid[n.row][n.col].isPath = i + 1)
       );
 
       return newGrid;
@@ -109,20 +126,16 @@ const Visualiser: React.FC<{}> = () => {
   };
 
   const animate = () => {
-    setAnim(false);
-    setAnimToggle(false);
+    setAnimate(true);
+    run();
   };
 
-  useEffect(() => {
-    if (!animToggle) {
-      setAnimToggle(true);
-      setAnim(true);
-    }
-  }, [animToggle]);
-
-  useEffect(() => {
-    console.log(algo);
-  }, [algo]);
+  // useEffect(() => {
+  //   if (!animToggle) {
+  //     setAnimToggle(true);
+  //     setAnim(true);
+  //   }
+  // }, [animToggle]);
 
   useEffect(() => {
     run();
@@ -146,13 +159,22 @@ const Visualiser: React.FC<{}> = () => {
 
         <Button label="Clear Walls" onClick={clearWalls} />
         <Button label="Show Animation" onClick={animate} />
+        <Slider
+          min={5}
+          max={200}
+          value={animSpeed}
+          onChange={(e: any, newValue: number | number[]) =>
+            setAnimSpeed(newValue as number)
+          }
+        />
       </Sidebar>
       <Grid
         gridState={[grid, setGrid]}
         startState={[start, setStart]}
         finishState={[finish, setFinish]}
         run={run}
-        isAnim={isAnim}
+        //isAnim={isAnim}
+        animSpeed={animSpeed}
       />
     </div>
   );
