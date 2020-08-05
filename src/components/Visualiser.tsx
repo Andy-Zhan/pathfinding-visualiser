@@ -31,6 +31,7 @@ const Visualiser: React.FC<{}> = () => {
   const [animToggle, setAnimToggle] = useState(true);
   const [isAnim, setAnim] = useState(false);
   const [animSpeed, setAnimSpeed] = useState<number>(100);
+  const [visitedNodeLength, setVisitedNodeLength] = useState<number>(0);
 
   const GRID_WIDTH = 42;
   const GRID_HEIGHT = 22;
@@ -87,14 +88,9 @@ const Visualiser: React.FC<{}> = () => {
       const newGrid = cloneArray(prevGrid);
       const result = algo.algorithm(newGrid, start, finish);
       if (!result) return prevGrid;
-      const [visitedNodes, shortestPath] = result;
-      shortestPath.forEach(
-        (n: TNode, i) => (newGrid[n.row][n.col].pathOrder = i + 1)
-      );
+      // const [visitedNodes, shortestPath] = result;
       return newGrid;
     });
-
-    //setB(b + 1);
   }, [algo, finish, start]);
 
   const clearWalls = () => {
@@ -124,7 +120,7 @@ const Visualiser: React.FC<{}> = () => {
 
   useEffect(() => {
     run();
-  }, [start, finish, run]);
+  }, [run]);
 
   return (
     <div>
@@ -160,6 +156,7 @@ const Visualiser: React.FC<{}> = () => {
         run={run}
         isAnim={isAnim}
         animSpeed={animSpeed}
+        visitedNodeLength={grid[finish[0]][finish[1]].visitedOrder}
       />
     </div>
   );

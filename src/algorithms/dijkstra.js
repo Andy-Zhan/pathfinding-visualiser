@@ -21,8 +21,11 @@ export function dijkstra(grid, start, finish) {
     closestNode.visitedOrder = count;
     count++;
     visitedNodesInOrder.push(closestNode);
-    if (closestNode === finishNode)
-      return [visitedNodesInOrder, getNodesInShortestPathOrder(finishNode)];
+    if (closestNode === finishNode) {
+      let shortestPathNodes = getNodesInShortestPathOrder(finishNode);
+      shortestPathNodes.forEach((n, i) => (n.pathOrder = i + 1));
+      return [visitedNodesInOrder, shortestPathNodes];
+    }
     updateUnvisitedNeighbors(closestNode, grid);
   }
   return;

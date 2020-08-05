@@ -22,6 +22,7 @@ interface Props {
   run: () => void;
   isAnim: boolean;
   animSpeed: number;
+  visitedNodeLength: number;
 }
 
 const Grid: React.FC<Props> = ({
@@ -31,6 +32,7 @@ const Grid: React.FC<Props> = ({
   run,
   isAnim,
   animSpeed,
+  visitedNodeLength,
 }) => {
   const [dragState, setDragState] = useState<MouseMode>(MouseMode.Off);
 
@@ -113,29 +115,16 @@ const Grid: React.FC<Props> = ({
           {grid.map((row: TNode[], rowId: number) => (
             <tr className="row" key={rowId}>
               {row.map((node: TNode, nodeId: number) => {
-                const {
-                  row,
-                  col,
-                  visitedOrder,
-                  distance,
-                  isWall,
-                  pathOrder,
-                  previousNode,
-                } = node;
+                const { row, col } = node;
                 return (
                   <Node
                     key={nodeId}
-                    row={row}
-                    col={col}
-                    distance={distance}
-                    visitedOrder={visitedOrder}
-                    isWall={isWall}
-                    pathOrder={pathOrder}
-                    previousNode={previousNode}
+                    {...node}
                     isStart={row === start[0] && col === start[1]}
                     isFinish={row === finish[0] && col === finish[1]}
                     isAnim={isAnim}
                     animSpeed={animSpeed}
+                    visitedNodeLength={visitedNodeLength}
                     onMouseDown={(row: number, col: number) =>
                       handleMouseDown(row, col)
                     }
