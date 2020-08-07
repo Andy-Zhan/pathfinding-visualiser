@@ -57,8 +57,7 @@ const Grid: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    if (dragState !== MouseMode.Off)
-      document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mouseup", handleMouseUp);
     return () => document.removeEventListener("mouseup", handleMouseUp);
   }, [dragState]);
 

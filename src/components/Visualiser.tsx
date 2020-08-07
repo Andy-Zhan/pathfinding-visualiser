@@ -7,23 +7,27 @@ import { TNode } from "../types/TNode";
 import Button from "./Button";
 import Slider from "@bit/mui-org.material-ui.slider";
 
-import { dijkstra } from "../algorithms/dijkstra";
+import { dijkstra, dfs, astar } from "../algorithms/library";
 
 const Visualiser: React.FC<{}> = () => {
   const algos: TAlgo[] = [
     {
       name: "Dijkstra's Algorithm",
-      shortName: "dijkstra",
       guaranteesShortest: true,
       weighted: true,
       algorithm: dijkstra,
     },
     {
       name: "Depth-first search",
-      shortName: "dfs",
       guaranteesShortest: false,
       weighted: false,
-      algorithm: dijkstra,
+      algorithm: dfs,
+    },
+    {
+      name: "A* search",
+      guaranteesShortest: true,
+      weighted: true,
+      algorithm: astar,
     },
   ];
 
@@ -149,14 +153,30 @@ const Visualiser: React.FC<{}> = () => {
 
         <Button label="Clear Walls" onClick={clearWalls} />
         <Button label="Show Animation" onClick={animate} />
-        <Slider
+        {/* <Slider
           min={5}
           max={200}
           value={animSpeed}
           onChange={(e: any, newValue: number | number[]) =>
             setAnimSpeed(newValue as number)
           }
-        />
+        /> */}
+        <span style={{ color: "rgb(255,255,255,0.65)", marginTop: 20 }}>
+          Path length: {grid[finish[0]][finish[1]].pathOrder || "-"}
+        </span>
+        <span style={{ color: "rgb(255,255,255,0.65)" }}>
+          Visited tiles:{" "}
+          {(() => {
+            const tilesVisited = grid
+              .flat()
+              .map((n) => n.visitedOrder)
+              .reduce((a, b) => Math.max(a, b));
+            const totalTiles = GRID_WIDTH * GRID_HEIGHT;
+            return `${tilesVisited}/${totalTiles} (${
+              Math.round((tilesVisited * 1000) / totalTiles) / 10
+            }%)`;
+          })()}
+        </span>
       </Sidebar>
       <Grid
         gridState={[grid, setGrid]}
