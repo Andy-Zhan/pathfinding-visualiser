@@ -29,6 +29,12 @@
   margin: 20px 10px;
 }
 
+#algoSelect input {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+  text-align: left;
+}
+
 .footer {
   flex-grow: 1;
   display: flex;

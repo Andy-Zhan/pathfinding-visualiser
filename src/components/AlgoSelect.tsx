@@ -17,10 +17,13 @@ const AlgoSelect = React.memo<Props>(({ algos, setAlgo }) => {
       ...provided,
       backgroundColor: "#222222",
       borderRadius: 0,
+      zIndex: 5,
     }),
     control: (provided: Object, state: Object) => ({
       ...provided,
       borderRadius: 0,
+      fontFamily:
+        'source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace',
     }),
   };
   return (
