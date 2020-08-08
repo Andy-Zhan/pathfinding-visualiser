@@ -7,7 +7,7 @@ import { TNode } from "../types/TNode";
 import Button from "./Button";
 import Slider from "@bit/mui-org.material-ui.slider";
 
-import { dijkstra, dfs, astar } from "../algorithms/library";
+import { dijkstra, dfs, astar, bfs } from "../algorithms/library";
 
 const Visualiser: React.FC<{}> = () => {
   const algos: TAlgo[] = [
@@ -16,18 +16,28 @@ const Visualiser: React.FC<{}> = () => {
       guaranteesShortest: true,
       weighted: true,
       algorithm: dijkstra,
+      link: "https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm",
     },
     {
-      name: "Depth-first search",
-      guaranteesShortest: false,
+      name: "Breadth-first search",
+      guaranteesShortest: true,
       weighted: false,
-      algorithm: dfs,
+      algorithm: bfs,
+      link: "https://en.wikipedia.org/wiki/Breadth-first_search",
     },
     {
       name: "A* search",
       guaranteesShortest: true,
       weighted: true,
       algorithm: astar,
+      link: "https://en.wikipedia.org/wiki/A*_search_algorithm",
+    },
+    {
+      name: "Depth-first search",
+      guaranteesShortest: false,
+      weighted: false,
+      algorithm: dfs,
+      link: "https://en.wikipedia.org/wiki/Depth-first_search",
     },
   ];
 
@@ -140,15 +150,22 @@ const Visualiser: React.FC<{}> = () => {
       <Sidebar>
         <AlgoSelect algos={algos} setAlgo={setAlgo} />
         <span className="text">
-          {algo.name} is {algo.weighted ? "a " : "an "}
-          <span style={{ color: "rgb(255,255,255,0.87)" }}>
+          <span className="highlight-text">{algo.name}</span> is{" "}
+          {algo.weighted ? "a " : "an "}
+          <span className="highlight-text">
             {algo.weighted ? "weighted" : "unweighted"}
           </span>{" "}
           algorithm and{" "}
-          <span style={{ color: "rgb(255,255,255,0.87)" }}>
+          <span className="highlight-text">
             {algo.guaranteesShortest ? "guarantees" : "does not guarantee"}
           </span>{" "}
-          the shortest path.
+          the shortest path.{" "}
+          <a
+            href={algo.link}
+            style={{ fontSize: 10, color: "rgb(255,255,255,0.5)" }}
+          >
+            (Wikipedia)
+          </a>
         </span>
 
         <Button label="Clear Walls" onClick={clearWalls} />

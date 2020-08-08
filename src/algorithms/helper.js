@@ -8,6 +8,7 @@ export function updateUnvisitedNeighbors(node, grid) {
     neighbor.distance = node.distance + 1;
     neighbor.previousNode = node;
   }
+  return unvisitedNeighbors;
 }
 
 export function getNeighbors(node, grid) {
@@ -23,7 +24,9 @@ export function getNeighbors(node, grid) {
 }
 
 export function getUnvisitedNeighbors(node, grid) {
-  return getNeighbors(node, grid).filter((neighbor) => !neighbor.visitedOrder);
+  return getNeighbors(node, grid).filter(
+    (neighbor) => !(neighbor.visitedOrder || neighbor.isWall)
+  );
 }
 
 // Backtracks from the finishNode to find the shortest path.

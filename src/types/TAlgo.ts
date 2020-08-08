@@ -5,4 +5,5 @@ export interface TAlgo {
   guaranteesShortest: boolean;
   weighted: boolean;
   algorithm: (grid: TNode[][], start: number[], finish: number[]) => boolean;
+  link: string;
 }

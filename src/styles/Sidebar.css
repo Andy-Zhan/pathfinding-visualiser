@@ -9,7 +9,7 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  justify-content: flex-start;
 }
 
 .logo {
@@ -56,4 +56,8 @@
 .footer-link:hover .heart-icon {
   transform: scale(1.5);
   filter: brightness(2) hue-rotate(360deg);
+}
+
+.highlight-text {
+  color: rgba(255, 255, 255, 0.87);
 }
