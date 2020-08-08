@@ -97,7 +97,6 @@ from {
         }
       >
         <style children={isAnim && fade} />
-
         <div style={visitedStyles} />
         <div style={pathStyles} />
       </td>
